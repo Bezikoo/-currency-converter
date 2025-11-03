@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="designer.css">
+</script src="base.js"></script>
+</head>
+<body>
+        <main class="app">
+            <h1 class="title">Конвертор валют</h1>
+
+            <section class="converter">
+                <div class="top-row">
+                    <div class="currency-select">
+                        <label for="from-currency">Від</label>
+                        <button class="fav-btn" id="fav-from" title="Додати в улюблені">☆</button>
+                        <select id="from-currency">
+                            <option value="UAH">UAH</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                    </div>
+
+                    <button id="swap-btn" class="swap" title="Поменяти місцями">⇄</button>
+
+                    <div class="currency-select">
+                        <label for="to-currency">Від</label>
+                        <button class="fav-btn" id="fav-to" title="Додати в улюблені">☆</button>
+                        <select id="to-currency">
+                            <option value="USD">USD</option>
+                            <option value="UAH">UAH</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="io-row">
+                    <div class="input-block">
+                        <label for="from-amount">Сума</label>
+                        <input id="from-amount" type="number" inputmode="decimal" placeholder="0.00" value="1" min="0" step="any">
+                    </div>
+
+                    <div class="arrow">→</div>
+
+                    <div class="output-block">
+                        <label for="to-amount">Результат</label>
+                        <input id="to-amount" type="text" placeholder="0.00" readonly>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="convert-btn" class="primary">Конвертувати</button>
+                    <button id="refresh-btn" class="ghost" title="Оновити курс">Оновити курс</button>
+                </div>
+
+                <div class="info">
+                    <span id="rate-info"></span>
+                    <span id="updated-info"></span>
+                </div>
+            </section>
+        </main>
+
+        <script src="base.js" defer></script>
+    </body>
+</html>
+</body>
+</html>

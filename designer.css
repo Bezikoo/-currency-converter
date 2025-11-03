@@ -1,0 +1,115 @@
+* { box-sizing: border-box; }
+body {
+  background: linear-gradient(160deg,#eef2f7 0%, #ffffff 100%);
+  font-family: Inter, Roboto, Arial, sans-serif;
+  margin: 0;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #17202A;
+}
+
+.app {
+  width: 100%;
+  max-width: 720px;
+}
+
+.title {
+  text-align: center;
+  font-size: 20px;
+  margin: 0 0 18px 0;
+  color: #0b2938;
+}
+
+.converter {
+  background: #ffffff;
+  border: 2px solid #0b2938;
+  border-radius: 8px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(11,41,56,0.08);
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.currency-select { flex: 1; }
+.currency-select { position: relative; }
+.currency-select label { display:block; font-size:12px; color:#4b5563; margin-bottom:6px }
+.currency-select select {
+  width:100%;
+  padding:10px 12px 10px 38px; 
+  font-size:16px;
+  border-radius:6px;
+  border:1px solid #d1d5db;
+  background:#fff;
+}
+
+.fav-btn{
+  position:absolute;
+  left:8px;
+  top:31px; 
+  width:22px; height:22px;
+  border:none; background:transparent; cursor:pointer;
+  font-size:18px; line-height:1; color:#c1c9d3;
+}
+.fav-btn.active{ color:#f59e0b; } 
+
+.swap {
+  border:2px dashed #0b2938;
+  background: #fff;
+  height:44px;
+  width:48px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.io-row { 
+  display:flex; align-items:center; gap:12px; margin-bottom:14px 
+}
+.input-block, .output-block { flex:1 }
+.input-block label, .output-block label { 
+  display:block; font-size:12px; color:#4b5563; margin-bottom:6px 
+}
+.input-block input, .output-block input {
+  width:100%;
+  padding:12px 14px;
+  font-size:18px;
+  border-radius:6px;
+  border:1px solid #d1d5db;
+}
+.output-block input[readonly] { background:#f8fafc; color:#0b2938 }
+
+.arrow { 
+  font-size:22px; color:#0b2938; width:36px; text-align:center 
+}
+
+.controls { 
+  display:flex; gap:10px; margin-bottom:10px 
+}
+.primary {
+  background:#0b2938; color:#fff; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; font-weight:600
+}
+.ghost { 
+  background:transparent; border:1px solid #cbd5e1; padding:8px 12px; border-radius:6px; cursor:pointer 
+}
+
+.info { 
+  display:flex; gap:12px; font-size:13px; color:#4b5563 
+}
+
+@media (max-width:520px){
+  .top-row{flex-direction:column;align-items:stretch}
+  .swap{align-self:center}
+  .io-row{flex-direction:column}
+  .arrow{transform:rotate(90deg)}
+}
