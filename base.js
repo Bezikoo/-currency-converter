@@ -1,15 +1,3 @@
-
-const fromSelect = document.getElementById('from-currency');
-const toSelect = document.getElementById('to-currency');
-const fromAmount = document.getElementById('from-amount');
-const toAmount = document.getElementById('to-amount');
-const swapBtn = document.getElementById('swap-btn');
-const rateInfo = document.getElementById('rate-info');
-const updatedInfo = document.getElementById('updated-info');
-const favFromBtn = document.getElementById('fav-from');
-const favToBtn = document.getElementById('fav-to');
-const langToggle = document.getElementById('lang-toggle');
-
 const translations = {
 	en: {
 		title: 'Currency Converter',
@@ -49,27 +37,22 @@ let currentLang = localStorage.getItem('lang') || 'uk';
 
 function t(key){ return translations[currentLang] && translations[currentLang][key] ? translations[currentLang][key] : key; }
 
-function applyLanguage(lang){
-	currentLang = lang;
-	try{ document.documentElement.lang = (lang === 'en' ? 'en' : 'uk'); }catch{}
-	const titleEl = document.querySelector('.title');
-	const fromLabel = document.querySelector('label[for="from-currency"]');
-	const toLabel = document.querySelector('label[for="to-currency"]');
-	const amountLabel = document.querySelector('label[for="from-amount"]');
-	const resultLabel = document.querySelector('label[for="to-amount"]');
-	if(titleEl) titleEl.textContent = t('title');
-	if(fromLabel) fromLabel.textContent = t('labelFrom');
-	if(toLabel) toLabel.textContent = t('labelTo');
-	if(amountLabel) amountLabel.textContent = t('amountLabel');
-	if(resultLabel) resultLabel.textContent = t('resultLabel');
-	if(fromAmount) fromAmount.placeholder = t('placeholderFrom');
-	if(toAmount) toAmount.placeholder = t('placeholderTo');
-	if(swapBtn) swapBtn.title = t('swapTitle');
-	if(favFromBtn) favFromBtn.title = t('favAdd');
-	if(favToBtn) favToBtn.title = t('favAdd');
-	if(langToggle) langToggle.textContent = (lang === 'en' ? 'EN' : 'UA');
-	if(selectsPopulated) populateSelectsFromRates();
-}
+// DOM element references (will be initialized in init())
+let fromSelect = null;
+let toSelect = null;
+let fromAmount = null;
+let toAmount = null;
+let swapBtn = null;
+let rateInfo = null;
+let updatedInfo = null;
+let favFromBtn = null;
+let favToBtn = null;
+let langToggle = null;
+let titleEl = null;
+let fromLabelEl = null;
+let toLabelEl = null;
+let amountLabelEl = null;
+let resultLabelEl = null;
 
 const NBU_API = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
 const EXCLUDED_CODES = ['XAU','XAG','XPT','XPD']; // золото, срібло, платина, паладій
@@ -118,12 +101,12 @@ async function fetchNbu(){
 		data.forEach(item => {
 			if (item && item.cc && item.rate) map[item.cc] = Number(item.rate);
 		});
-			nbuRates = map;
+		nbuRates = map;
 		lastFetched = Date.now();
 		populateSelectsFromRates();
 		return map;
 	}catch(err){
-			console.error('Failed to fetch NBU rates', err);
+		console.error('Failed to fetch NBU rates', err);
 		throw err;
 	}
 }
@@ -148,10 +131,11 @@ function getFactor(from, to){
 }
 
 let suppressSelectChange = false;
-let prevFrom = fromSelect.value;
-let prevTo = toSelect.value;
+let prevFrom = null;
+let prevTo = null;
 
 function swapCurrencies(){
+	if(!fromSelect || !toSelect) return;
 	const a = fromSelect.value;
 	const b = toSelect.value;
 	suppressSelectChange = true;
@@ -163,42 +147,44 @@ function swapCurrencies(){
 	updateConversion();
 }
 
-	function populateSelectsFromRates(){
-		if(!nbuRates) return;
-		const codesSet = new Set(['UAH', ...Object.keys(nbuRates)]);
-		EXCLUDED_CODES.forEach(c => codesSet.delete(c));
-		const allCodes = Array.from(codesSet).sort();
-		const favCodes = allCodes.filter(c => favorites.has(c));
-		const otherCodes = allCodes.filter(c => !favorites.has(c));
+function populateSelectsFromRates(){
+	if(!nbuRates) return;
+	if(!fromSelect || !toSelect) return;
+	const codesSet = new Set(['UAH', ...Object.keys(nbuRates)]);
+	EXCLUDED_CODES.forEach(c => codesSet.delete(c));
+	const allCodes = Array.from(codesSet).sort();
+	const favCodes = allCodes.filter(c => favorites.has(c));
+	const otherCodes = allCodes.filter(c => !favorites.has(c));
 
-		const keepFrom = fromSelect.value;
-		const keepTo = toSelect.value;
+	const keepFrom = fromSelect.value;
+	const keepTo = toSelect.value;
 
-		const toOptionsHtml = (codes)=> codes.map(c => `<option value="${c}">${c}</option>`).join('');
-		let html = '';
-		if(favCodes.length){
-			html += `<optgroup label="${t('favoritesLabel')}">${toOptionsHtml(favCodes)}</optgroup>`;
-		}
-		html += toOptionsHtml(otherCodes);
-		fromSelect.innerHTML = html;
-		toSelect.innerHTML = html;
-
-		const all = [...favCodes, ...otherCodes];
-		const defFrom = all.includes('UAH') ? 'UAH' : all[0];
-		const defTo = all.includes('USD') ? 'USD' : (all.find(c => c !== defFrom) || all[0]);
-
-		fromSelect.value = all.includes(keepFrom) ? keepFrom : defFrom;
-		toSelect.value = all.includes(keepTo) ? keepTo : defTo;
-
-		prevFrom = fromSelect.value;
-		prevTo = toSelect.value;
-
-		selectsPopulated = true;
-		updateFavButtons();
+	const toOptionsHtml = (codes)=> codes.map(c => `<option value="${c}">${c}</option>`).join('');
+	let html = '';
+	if(favCodes.length){
+		html += `<optgroup label="${t('favoritesLabel')}">${toOptionsHtml(favCodes)}</optgroup>`;
 	}
+	html += toOptionsHtml(otherCodes);
+	fromSelect.innerHTML = html;
+	toSelect.innerHTML = html;
+
+	const all = [...favCodes, ...otherCodes];
+	const defFrom = all.includes('UAH') ? 'UAH' : all[0];
+	const defTo = all.includes('USD') ? 'USD' : (all.find(c => c !== defFrom) || all[0]);
+
+	fromSelect.value = all.includes(keepFrom) ? keepFrom : defFrom;
+	toSelect.value = all.includes(keepTo) ? keepTo : defTo;
+
+	prevFrom = fromSelect.value;
+	prevTo = toSelect.value;
+
+	selectsPopulated = true;
+	updateFavButtons();
+}
 
 function onFromChange(){
 	if(suppressSelectChange) return;
+	if(!fromSelect || !toSelect) return;
 	const newFrom = fromSelect.value;
 	if(newFrom === prevTo){
 		suppressSelectChange = true;
@@ -217,6 +203,7 @@ function onFromChange(){
 
 function onToChange(){
 	if(suppressSelectChange) return;
+	if(!fromSelect || !toSelect) return;
 	const newTo = toSelect.value;
 	if(newTo === prevFrom){
 		suppressSelectChange = true;
@@ -234,6 +221,7 @@ function onToChange(){
 }
 
 async function updateConversion(){
+	if(!fromSelect || !toSelect || !fromAmount || !toAmount) return;
 	const from = fromSelect.value;
 	const to = toSelect.value;
 	const amount = parseFloat(fromAmount.value) || 0;
@@ -241,66 +229,63 @@ async function updateConversion(){
 	try{
 		if(!nbuRates) await fetchNbu();
 	}catch(err){
-		rateInfo.textContent = t('rateFetchError');
-		toAmount.value = '—';
-		updatedInfo.textContent = '';
+		if(rateInfo) rateInfo.textContent = t('rateFetchError');
+		if(toAmount) toAmount.value = '—';
+		if(updatedInfo) updatedInfo.textContent = '';
 		return;
 	}
 
 	const factor = getFactor(from,to);
 	if(factor === null){
-		rateInfo.textContent = t('rateNotDefined');
-		toAmount.value = '—';
-		updatedInfo.textContent = '';
+		if(rateInfo) rateInfo.textContent = t('rateNotDefined');
+		if(toAmount) toAmount.value = '—';
+		if(updatedInfo) updatedInfo.textContent = '';
 		return;
 	}
 
 	const result = amount * factor;
 	// show converted result rounded to 2 decimal places
 	toAmount.value = formatMoney2(result);
-	rateInfo.textContent = `1 ${from} = ${fmt(factor)} ${to}`;
-	updatedInfo.textContent = lastFetched ? `${t('updatedPrefix')} ${new Date(lastFetched).toLocaleString()}` : '';
+	if(rateInfo) rateInfo.textContent = `1 ${from} = ${fmt(factor)} ${to}`;
+	if(updatedInfo) updatedInfo.textContent = lastFetched ? `${t('updatedPrefix')} ${new Date(lastFetched).toLocaleString()}` : '';
 	updateFavButtons();
 }
 
 let tmr = null;
-fromAmount.addEventListener('input', ()=>{
-	// ensure at most two decimal places while typing
-	sanitizeTwoDecimalsInput(fromAmount);
-	clearTimeout(tmr);
-	tmr = setTimeout(updateConversion, 250);
-});
 
-// round to two decimals on blur and trigger conversion
-fromAmount.addEventListener('blur', ()=>{
-	if(!fromAmount.value) return;
-	const n = parseFloat(String(fromAmount.value).replace(',', '.'));
-	if(Number.isNaN(n)){
-		fromAmount.value = '';
-		toAmount.value = '';
-		return;
+function attachInputListeners(){
+	if(fromAmount){
+		// ensure at most two decimal places while typing
+		fromAmount.addEventListener('input', ()=>{
+			sanitizeTwoDecimalsInput(fromAmount);
+			clearTimeout(tmr);
+			tmr = setTimeout(updateConversion, 250);
+		});
+
+		// round to two decimals on blur and trigger conversion
+		fromAmount.addEventListener('blur', ()=>{
+			if(!fromAmount.value) return;
+			const n = parseFloat(String(fromAmount.value).replace(',', '.'));
+			if(Number.isNaN(n)){
+				fromAmount.value = '';
+				if(toAmount) toAmount.value = '';
+				return;
+			}
+			fromAmount.value = n.toFixed(2);
+			updateConversion();
+		});
+	} else {
+		console.warn('from-amount element not found');
 	}
-	fromAmount.value = n.toFixed(2);
-	updateConversion();
-});
+}
 
-
-swapBtn.addEventListener('click', swapCurrencies);
-fromSelect.addEventListener('change', onFromChange);
-toSelect.addEventListener('change', onToChange);
-
-// language toggle handler
-langToggle?.addEventListener('click', ()=>{
-	const next = currentLang === 'en' ? 'uk' : 'en';
-	localStorage.setItem('lang', next);
-	applyLanguage(next);
-	updateConversion();
-});
-
-// apply initial language and run conversion
-applyLanguage(currentLang);
-updateConversion();
-
+function safeAddListener(el, evt, handler, name){
+	if(el){
+		el.addEventListener(evt, handler);
+	} else {
+		console.warn(`${name || 'element'} not found for event ${evt}`);
+	}
+}
 
 function loadFavorites(){
 	try{
@@ -323,14 +308,14 @@ function toggleFav(code){
 	updateFavButtons();
 }
 function updateFavButtons(){
-	if(favFromBtn) {
+	if(favFromBtn && fromSelect) {
 		const code = fromSelect.value;
 		const active = isFav(code);
 		favFromBtn.classList.toggle('active', active);
 		favFromBtn.textContent = active ? '★' : '☆';
 		favFromBtn.title = active ? t('favInFav') : t('favAdd');
 	}
-	if(favToBtn) {
+	if(favToBtn && toSelect) {
 		const code = toSelect.value;
 		const active = isFav(code);
 		favToBtn.classList.toggle('active', active);
@@ -339,6 +324,73 @@ function updateFavButtons(){
 	}
 }
 
-favFromBtn?.addEventListener('click', ()=> toggleFav(fromSelect.value));
-favToBtn?.addEventListener('click', ()=> toggleFav(toSelect.value));
+function applyLanguage(lang){
+	currentLang = lang;
+	try{ document.documentElement.lang = (lang === 'en' ? 'en' : 'uk'); }catch{}
+	if(titleEl) titleEl.textContent = t('title');
+	if(fromLabelEl) fromLabelEl.textContent = t('labelFrom');
+	if(toLabelEl) toLabelEl.textContent = t('labelTo');
+	if(amountLabelEl) amountLabelEl.textContent = t('amountLabel');
+	if(resultLabelEl) resultLabelEl.textContent = t('resultLabel');
+	if(fromAmount) fromAmount.placeholder = t('placeholderFrom');
+	if(toAmount) toAmount.placeholder = t('placeholderTo');
+	if(swapBtn) swapBtn.title = t('swapTitle');
+	if(favFromBtn) favFromBtn.title = t('favAdd');
+	if(favToBtn) favToBtn.title = t('favAdd');
+	if(langToggle) langToggle.textContent = (lang === 'en' ? 'EN' : 'UA');
+	if(selectsPopulated) populateSelectsFromRates();
+}
+
+function init(){
+	// find DOM elements
+	fromSelect = document.getElementById('from-currency');
+	toSelect = document.getElementById('to-currency');
+	fromAmount = document.getElementById('from-amount');
+	toAmount = document.getElementById('to-amount');
+	swapBtn = document.getElementById('swap-btn');
+	rateInfo = document.getElementById('rate-info');
+	updatedInfo = document.getElementById('updated-info');
+	favFromBtn = document.getElementById('fav-from');
+	favToBtn = document.getElementById('fav-to');
+	langToggle = document.getElementById('lang-toggle');
+
+	titleEl = document.querySelector('.title');
+	fromLabelEl = document.querySelector('label[for="from-currency"]');
+	toLabelEl = document.querySelector('label[for="to-currency"]');
+	amountLabelEl = document.querySelector('label[for="from-amount"]');
+	resultLabelEl = document.querySelector('label[for="to-amount"]');
+
+	// attach listeners safely
+	attachInputListeners();
+
+	safeAddListener(swapBtn, 'click', swapCurrencies, 'swap-btn');
+	safeAddListener(fromSelect, 'change', onFromChange, 'from-currency');
+	safeAddListener(toSelect, 'change', onToChange, 'to-currency');
+
+	safeAddListener(favFromBtn, 'click', ()=> toggleFav(fromSelect ? fromSelect.value : null), 'fav-from');
+	safeAddListener(favToBtn, 'click', ()=> toggleFav(toSelect ? toSelect.value : null), 'fav-to');
+
+	// language toggle
+	if (langToggle) {
+		langToggle.addEventListener('click', ()=>{
+			const next = currentLang === 'en' ? 'uk' : 'en';
+			localStorage.setItem('lang', next);
+			applyLanguage(next);
+			updateConversion();
+		});
+	} else {
+		console.warn('lang-toggle element not found');
+	}
+
+	// initialize UI
+	applyLanguage(currentLang);
+	updateConversion();
+}
+
+// ensure init after DOM is ready (works with or without defer)
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', init);
+} else {
+	init();
+}
 // https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json api 
