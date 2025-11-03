@@ -113,3 +113,18 @@ body {
   .io-row{flex-direction:column}
   .arrow{transform:rotate(90deg)}
 }
+
+.lang-toggle{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  width:48px;
+  height:48px;
+  border-radius:999px;
+  border:none;
+  background:#0b2938;
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(11,41,56,0.18);
+}

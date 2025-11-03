@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Конвертор валют</title>
     <link rel="stylesheet" href="designer.css">
-</script src="base.js"></script>
 </head>
 <body>
         <main class="app">
@@ -27,7 +26,7 @@
                     <button id="swap-btn" class="swap" title="Поменяти місцями">⇄</button>
 
                     <div class="currency-select">
-                        <label for="to-currency">Від</label>
+                        <label for="to-currency">До</label>
                         <button class="fav-btn" id="fav-to" title="Додати в улюблені">☆</button>
                         <select id="to-currency">
                             <option value="USD">USD</option>
@@ -41,7 +40,7 @@
                 <div class="io-row">
                     <div class="input-block">
                         <label for="from-amount">Сума</label>
-                        <input id="from-amount" type="number" inputmode="decimal" placeholder="0.00" value="1" min="0" step="any">
+                        <input id="from-amount" type="number" inputmode="decimal" placeholder="0.00" value="1" min="0" step="0.01">
                     </div>
 
                     <div class="arrow">→</div>
@@ -52,11 +51,7 @@
                     </div>
                 </div>
 
-                <div class="controls">
-                    <button id="convert-btn" class="primary">Конвертувати</button>
-                    <button id="refresh-btn" class="ghost" title="Оновити курс">Оновити курс</button>
-                </div>
-
+                
                 <div class="info">
                     <span id="rate-info"></span>
                     <span id="updated-info"></span>
@@ -64,8 +59,8 @@
             </section>
         </main>
 
+    <button id="lang-toggle" class="lang-toggle" aria-label="Toggle language">UA</button>
+
         <script src="base.js" defer></script>
     </body>
-</html>
-</body>
 </html>
