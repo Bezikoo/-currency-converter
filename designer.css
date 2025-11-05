@@ -117,7 +117,7 @@ body {
 .lang-toggle{
   position:fixed;
   right:18px;
-  bottom:18px;
+  bottom:72px;
   width:48px;
   height:48px;
   border-radius:999px;
@@ -127,4 +127,30 @@ body {
   font-weight:700;
   cursor:pointer;
   box-shadow:0 6px 18px rgba(11,41,56,0.18);
+}
+
+/* Footer notes area */
+.note-footer{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:10px 18px;
+  padding-right:96px; /* leave room for the language button */
+  background:rgba(255,255,255,0.65);
+  backdrop-filter:blur(6px);
+  border-top:1px solid #e5e7eb;
+  z-index:10;
+}
+.note-wrap{ width:100%; max-width:960px; margin:0 auto; }
+.note-text{ margin:0; text-align:center; font-size:13px; color:#4b5563 }
+.note-input{
+  width:100%;
+  min-height:44px;
+  font-size:14px;
+  padding:10px 12px;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  background:#ffffff;
+  resize:vertical;
 }
